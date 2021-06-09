@@ -11,26 +11,26 @@ class map4minesweeper {
 private:
 	int length{};
 	//int difficulty;
-	vector<vector<int>> map_data;
-	vector<vector<int>> map_indicater;
-	vector<vector<string>> map_display;
+	vector<vector<int>> map_data;//存储雷所在位置
+	vector<vector<int>> map_indicater;//此处每个坐标内数字均代表其周围雷的数量
+	vector<vector<string>> map_display;//为用户展示的雷区样式
 public:
 	map4minesweeper() {
 
 	}
 	void map(int length,int difficulty) {
-		srand((int)time(0));
-		this->length = length;
+		srand((int)time(0));//初始化随机种子
+		this->length = length;//存储棋盘大小备用
 		vector<int> tmp;
 		vector<string> c_tmp;
 			for (int index = 0; index < length; index++) {
-				this->map_data.push_back(tmp);
-				this->map_display.push_back(c_tmp);
+				this->map_data.push_back(tmp);//初始化雷区
+				this->map_display.push_back(c_tmp);//初始化显示区
 				for (int sub_index = 0; sub_index < length; sub_index++) {
 					this->map_display[index].push_back(".");
 					if (rand() % 100 > difficulty) this->map_data[index].push_back(0);
 					else this->map_data[index].push_back(1);
-				}
+				}//初始化雷区，0代表安全，1代表有雷
 			}
 			for (int index = 0; index < length; index++) {
 				this->map_indicater.push_back(tmp);
@@ -44,7 +44,7 @@ public:
 					}
 					sum -= this->map_data[index][sub_index];
 					this->map_indicater[index].push_back(sum);
-				}
+				}//计算每个坐标周围雷的数量并存入map_indicater
 		}
 	}
 	void cleary(int x, int y) {
@@ -59,7 +59,7 @@ public:
 				this->map_display[x][sub_index] = to_string(this->map_indicater[x][sub_index]);
 				break;
 			}
-		}
+		}//清理x,y坐标下方的雷区直至扫描到周围有雷
 		sub_index = y + 1;
 		while (sub_index < this->length)
 		{
@@ -71,7 +71,7 @@ public:
 				this->map_display[x][sub_index] = to_string(this->map_indicater[x][sub_index]);
 				break;
 			}
-		}
+		}//清理x,y坐标上方的雷区直至扫描到周围有雷
 
 	}
 	void clear(int x, int y) {
@@ -87,7 +87,7 @@ public:
 				this->map_display[index][y] = to_string(this->map_indicater[index][y]);
 				break;
 			}
-		}
+		}//清理x,y坐标左方的雷区直至扫描到周围有雷
 		index = x + 1;
 		while (index >this->length)
 		{
@@ -100,10 +100,10 @@ public:
 				this->map_display[index][y] = to_string(this->map_indicater[index][y]);
 				break;
 			}
-		}
+		}//清理x,y坐标右方的雷区直至扫描到周围有雷
 	}
 	int click(int x, int y) {
-		if (x >= this->length || y >= this->length) {
+		if (x >= this->length || y >= this->length) {//判断输入是否超出棋盘范围
 			cout << "无效坐标" << endl;
 			return 1;
 		}
@@ -119,16 +119,16 @@ public:
 	void display() {
 		cout << "LINE   ";
 		for (int index = 0; index < this->length; index++) {
-			cout << to_string(index) << ' ';
+			cout << to_string(index) << " ";//输出棋盘指示器横坐标
 		}
-		cout << endl;
+		cout << "\n" << endl;
 		for (int index = 0; index < this->length; index++) {
-			cout << "Line" << to_string(index) << "  ";
+			cout << "Line" << to_string(index) << "  ";//输出棋盘指示器纵坐标
 			for (int sub_index = 0; sub_index < this->length; sub_index++) {
 				cout << this->map_display[index][sub_index] << ' ';
 			}
 			cout << endl;
-		}
+		}//输出棋盘
 	}
 	void check40() {
 		int flag = 0;
@@ -147,9 +147,9 @@ public:
 					}
 				}
 			}
-		}
+		}//检查是否有可以自动扫描的坐标，若有则将其扫描。自动扫描已知周围没有雷但是尚未扫描的坐标。
 		if (flag == 1)
-			this->check40();
+			this->check40();//递归至无法自动扫描
 	}
 	void show_bomb(){
 		int wrong_flag = 0;
@@ -159,11 +159,11 @@ public:
 					wrong_flag += 1;
 				}
 				if (this->map_data[index][sub_index] == 1) {
-					if (this->map_display[index][sub_index] == "!") {
-						this->map_display[index][sub_index] = "v";
+					if (this->map_display[index][sub_index] == "!") {//！ 代表标记的雷
+						this->map_display[index][sub_index] = "v";//v 代表标记正确的雷
 					}
 					else
-						this->map_display[index][sub_index] = "X";
+						this->map_display[index][sub_index] = "X";//X代表未标记的雷
 				}
 				else
 				{
@@ -183,14 +183,14 @@ public:
 					break;
 				}
 			}
-		}
+		}//判断所有可扫描的非雷坐标是否已经被扫描完成。如果无雷坐标均被扫描（代表已经安全），则认为扫雷成功
 		if (flag == 0) {
 			return 1;
 		}
 		return 0;
 	}
 	void flag(int x, int y) {
-		this->map_display[x][y] = "!";
+		this->map_display[x][y] = "!";//标记雷区功能
 	}
 	
 };
